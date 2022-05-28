@@ -18,10 +18,16 @@ const permissionCheck = async () => {
     return result.state === 'granted'
 } 
 
-const speechSyntesisCheck = () => {
-    const voices = speechSynthesis.getVoices()
-    return !voices.some(voice => voice.startsWith('Google'))
-}
+const speechSyntesisCheck = () => new Promise(r => {
+    speechSynthesis.getVoices()
+    setTimeout(() => {
+        const voices = speechSynthesis.getVoices()
+
+        console.log(voices)
+        r(!voices.some(voice => voice.voiceURI.startsWith('Google')))
+    }, 1000)
+    
+})
 
 
 const tests = [
@@ -31,11 +37,11 @@ const tests = [
     {name: 'ProcessCheck', fn: processCheck, weight: 'high'},
     {name: 'LanguageCheck', fn: languageCheck, weight: 'mid'},
 ]
-const result = tests.map(async ({name, fn, weight}) => {
+Promise.all(tests.map(async ({name, fn, weight}) => {
     const detected = await fn();
     return {
         name, weight, detected 
     }
+})).then(result => {
+    document.querySelector('#res').value = JSON.stringify(result, null, 4)
 })
-
-document.querySelector('#result').innerHTML = JSON.stringify(result, null, 4)
