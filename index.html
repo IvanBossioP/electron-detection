@@ -11,10 +11,9 @@
         This websites tests all the method I know to detect wheter this page is being viewed by a normal browser or by electron,
         I gave a weight to each check that determines how much it indicates that the page is being viewed by electron, 
         if a check with high weight is detected it means that most likely the page is being runned on electron, 
-        if 2 or more check with mid weight are detected it also means that electron is probably being used to view the page,
+        if 2 or more checks with mid weight are detected it also means that electron is probably being used to view the page,
         checks with low weight can be ignored because they may not give correct results
-        Note that most of the checks with high weight can be easily bypasses with simple electron settings meanwhile
-        it's not that trivial to bypass checks with mid weight 
+        Note that some of the checks with high weight can be easily bypasses with simple electron settings
     </p>
     <textarea cols="100" rows="100" id="res"></textarea>
     <script src="detect.js"></script>
