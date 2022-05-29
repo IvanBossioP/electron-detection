@@ -13,6 +13,11 @@ const processCheck = () => {
     return 'process' in window
 }
 
+const userAgentCheck = () => {
+    return /electron/i.test(navigator.userAgent)
+}
+
+
 const permissionCheck = async () => {
     const result = await navigator.permissions.query({name: 'geolocation'})
     return result.state === 'granted'
@@ -29,6 +34,18 @@ const speechSyntesisCheck = () => new Promise(r => {
     
 })
 
+const webWorkerCheck = () => new Promise(r => {
+    if(userAgentCheck()) {
+        r(true)
+        return;
+    }
+    const worker = new Worker('worker.js')
+    worker.addEventListener('message', (event) => {
+        r(event.data !== navigator.userAgent)
+        worker.terminate();
+    })
+})
+
 
 const tests = [
     {name: 'PermissionCheck', fn: permissionCheck, weight: 'mid'},
@@ -36,6 +53,9 @@ const tests = [
     {name: 'ConnectionCheck', fn: connectionCheck, weight: 'low'},
     {name: 'ProcessCheck', fn: processCheck, weight: 'high'},
     {name: 'LanguageCheck', fn: languageCheck, weight: 'mid'},
+    {name: 'UserAgentCheck', fn: userAgentCheck, weight: 'high'},
+    {name: 'WebWorkerCheck', fn: webWorkerCheck, weight: 'high'},
+
 ]
 Promise.all(tests.map(async ({name, fn, weight}) => {
     const detected = await fn();
