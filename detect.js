@@ -48,7 +48,7 @@ const chromeCheck = () => {
 
 //refers to https://github.com/electron/electron/issues/30201
 const userDataCheck = () => {
-    return (!navigator.userAgentData) || navigator.userAgentData.brands.length === 0 || (!navigator.platform)
+    return (!navigator.userAgentData) || navigator.userAgentData.brands.length === 0 || (!navigator.userAgentData-platform)
 }
 
 //refers to https://github.com/electron/electron/blob/d44a187d0b226800fe0cb4f7a0d2b36c871b27cd/lib/renderer/window-setup.ts#L17
