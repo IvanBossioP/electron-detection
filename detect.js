@@ -56,6 +56,17 @@ const promptCheck = () => {
     return Function.toString.call(window.prompt) === 'function () { [native code] }'
 }
 
+//refers to https://github.com/electron/electron/blob/d44a187d0b226800fe0cb4f7a0d2b36c871b27cd/lib/renderer/window-setup.ts#L10
+const closeCheck = () => {
+    return Function.toString.call(window.close) !== 'function close() { [native code] }'
+}
+
+//refers to https://www.electronjs.org/docs/latest/api/file-object
+const filePathCheck = () => {
+    return 'path' in File.prototype
+}
+
+
 const tests = [
     {name: 'PermissionCheck', fn: permissionCheck, weight: 'mid'},
     {name: 'SpeechSyntesisCheck', fn: speechSyntesisCheck, weight: 'mid'},
@@ -67,8 +78,8 @@ const tests = [
     {name: 'ChromeCheck', fn: chromeCheck, weight: 'high'},
     {name: 'UserDataCheck', fn: userDataCheck, weight: 'mid'},
     {name: 'PromptCheck', fn: promptCheck, weight: 'high'},
-
-
+    {name: 'CloseCheck', fn: closeCheck, weight: 'high'},
+    {name: 'FilePathCheck', fn: filePathCheck, weight: 'high'},
 ]
 Promise.all(tests.map(async ({name, fn, weight}) => {
     const detected = await fn();
