@@ -51,6 +51,9 @@ const userDataCheck = () => {
     return (!navigator.userAgentData) || navigator.userAgentData.brands.length === 0 || (!navigator.platform)
 }
 
+const promptCheck = () => {
+    return Function.toString.call(window.prompt) === 'function () { [native code] }'
+}
 
 const tests = [
     {name: 'PermissionCheck', fn: permissionCheck, weight: 'mid'},
@@ -61,7 +64,9 @@ const tests = [
     {name: 'UserAgentCheck', fn: userAgentCheck, weight: 'high'},
     {name: 'WebWorkerCheck', fn: webWorkerCheck, weight: 'high'},
     {name: 'ChromeCheck', fn: chromeCheck, weight: 'high'},
-    {name: 'UserDataCheck', fn: userDataCheck, weight: 'mid'}
+    {name: 'UserDataCheck', fn: userDataCheck, weight: 'mid'},
+    {name: 'PromptCheck', fn: promptCheck, weight: 'high'},
+
 
 ]
 Promise.all(tests.map(async ({name, fn, weight}) => {
