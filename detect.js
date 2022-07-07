@@ -21,24 +21,27 @@ const permissionCheck = async () => {
 
 //refers to https://github.com/electron/electron/issues/11585#issuecomment-356501745
 const speechSyntesisCheck = () => new Promise(r => {
-    speechSynthesis.getVoices()
-    setTimeout(() => {
-        const voices = speechSynthesis.getVoices()
-        r(!voices.some(voice => voice.voiceURI.startsWith('Google')))
-    }, 1000)
-    
+    const voices = speechSynthesis.getVoices()
+    if(voices.length !== 0) {
+         r(!voices.some(voice => voice.voiceURI.startsWith('Google')))
+    } else {
+        speechSynthesis.onvoiceschanged = () => {
+            const voices = speechSynthesis.getVoices()
+            r(!voices.some(voice => voice.voiceURI.startsWith('Google')))
+        }
+    }
 })
 
 const webWorkerCheck = () => new Promise(r => {
     if(userAgentCheck()) {
         r(true)
-        return;
+    } else {
+        const worker = new Worker('worker.js')
+        worker.addEventListener('message', (event) => {
+            r(event.data !== navigator.userAgent)
+            worker.terminate();
+        })
     }
-    const worker = new Worker('worker.js')
-    worker.addEventListener('message', (event) => {
-        r(event.data !== navigator.userAgent)
-        worker.terminate();
-    })
 })
 
 //refers to https://github.com/electron/electron/issues/2042#issuecomment-114667969
@@ -48,12 +51,12 @@ const chromeCheck = () => {
 
 //refers to https://github.com/electron/electron/issues/30201
 const userDataCheck = () => {
-    return (!navigator.userAgentData) || navigator.userAgentData.brands.length === 0 || (!navigator.userAgentData.platform)
+    return (!navigator.userAgentData) || navigator.userAgentData.brands.length !== 3 || (!navigator.userAgentData.platform)
 }
 
 //refers to https://github.com/electron/electron/blob/d44a187d0b226800fe0cb4f7a0d2b36c871b27cd/lib/renderer/window-setup.ts#L17
 const promptCheck = () => {
-    return Function.toString.call(window.prompt) === 'function () { [native code] }'
+    return Function.toString.call(window.prompt) !== 'function prompt() { [native code] }'
 }
 
 //refers to https://github.com/electron/electron/blob/d44a187d0b226800fe0cb4f7a0d2b36c871b27cd/lib/renderer/window-setup.ts#L10
